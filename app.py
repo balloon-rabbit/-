@@ -3,7 +3,7 @@ import json
 import re
 import requests
 import matplotlib.pyplot as plt
-import japanize_matplotlib
+import matplotlib_fontja
 from io import BytesIO
 # textwrapは、現時点では不要かもしれませんが、念のため残しておきます
 # import textwrap 
