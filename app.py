@@ -4,6 +4,7 @@ import re
 import requests
 import matplotlib.pyplot as plt
 import matplotlib_fontja
+import google.generativeai as genai
 from io import BytesIO
 # textwrapは、現時点では不要かもしれませんが、念のため残しておきます
 # import textwrap 
@@ -11,10 +12,9 @@ from io import BytesIO
 # --- 1. 設定セクション ---
 # APIキーの設定など、最初に必要な設定を記述
 try:
-    # genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    # model = genai.GenerativeModel("gemini-1.5-flash")
-    # ※現在API呼び出しをコメントアウトしているため、一旦こちらもコメントアウト
-    pass # 何もしない
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    
 except Exception as e:
     st.error("APIキーの設定に失敗しました。")
     st.stop()
@@ -53,22 +53,13 @@ def create_prompt(theme, x_axis_name, x_axis_desc, y_axis_name, y_axis_desc):
     return prompt
 
 def get_data_from_ai(prompt):
-    """AIを実行してデータを取得する関数（※現在はダミーデータを返します）"""
-    # response = model.generate_content(prompt)
-    # output_text = response.text
-    
-    # AIを毎回実行すると時間がかかるため、開発中は固定のダミーデータを使います
-    dummy_json_output = """
-    [
-      {"name": "アサヒスーパードライ", "x": 15, "y": 15},
-      {"name": "サッポロ エビス", "x": 30, "y": 25},
-      {"name": "サントリー 角瓶", "x": 25, "y": 40},
-      {"name": "山崎12年", "x": 85, "y": 60},
-      {"name": "チョーヤ 梅酒", "x": 40, "y": 80},
-      {"name": "カルロロッシ(赤)", "x": 10, "y": 45}
-    ]
-    """
-    return dummy_json_output
+    """AIを実行してデータを取得する関数"""
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        st.error(f"AIとの通信中にエラーが発生しました: {e}")
+        return None
 
 def parse_ai_response(output_text):
     """AIの返答からJSONデータを抽出・解析する関数"""
